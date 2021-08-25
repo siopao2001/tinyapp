@@ -14,9 +14,9 @@ app.get('/', (require, response)=>{
    response.send('Hello!');
 });
 
-app.get('/urls.', (require, response)=>{
+app.get('/urls', (require, response)=>{
    const templateVars = {urls: urlDatabase}
-   response.render('urls_index', {templateVars});
+   response.render('urls_index', templateVars);
 })
 
 app.get('/urls.json', (require, response)=>{
