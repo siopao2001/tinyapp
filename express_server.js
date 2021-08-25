@@ -5,7 +5,7 @@ const PORT = 8080
 
 app.set('view engine', 'ejs')
 
-const urlDatabase = urlDatabse = {
+const urlDatabase =  {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
@@ -13,6 +13,11 @@ const urlDatabase = urlDatabse = {
 app.get('/', (require, response)=>{
    response.send('Hello!');
 });
+
+app.get('/urls.', (require, response)=>{
+   const templateVars = {urls: urlDatabase}
+   response.render('urls_index', {templateVars});
+})
 
 app.get('/urls.json', (require, response)=>{
    response.json(urlDatabase);
