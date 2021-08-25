@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/siopao2001/tinyapp#readme",
   "dependencies": {
+    "ejs": "^3.1.6",
     "express": "^4.17.1"
   }
 }
