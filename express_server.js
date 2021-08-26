@@ -6,9 +6,15 @@ const PORT = 8080;
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: true}));
 
-function generateRandonString() {
-
-};
+function generateRandomString(len) {
+  var ans = '';
+  const array = 'abcdefghijklmnopqrstuvwxyz123456789123456789';
+  for (var i = len; i > 0; i--) {
+    ans +=
+      array[Math.floor(Math.random() * array.length)];
+  }
+  return ans;
+}
 
 app.set('view engine', 'ejs')
 
@@ -31,8 +37,9 @@ app.get('/urls/new',(require, response)=>{
 })
 
 app.post('/urls', (require, response)=>{
-   console.log(require.body)
-   response.send('OK')
+   const randomString = generateRandomString(6)
+   urlDatabase[randomString] = require.body.longURL
+   response.redirect(`/urls/${randomString}`)
 })
 
 app.get("/urls/:shortURL", (req, res) => {
