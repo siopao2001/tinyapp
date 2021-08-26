@@ -1,10 +1,14 @@
 const { response } = require('express');
 const express = require('express');
 const app = express();
-const PORT = 8080
+const PORT = 8080;
 
-const bodyParser = require('body-parser')
-app.use(bodyParser.urlencoded({extended: true}))
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: true}));
+
+function generateRandonString() {
+
+};
 
 app.set('view engine', 'ejs')
 
@@ -24,6 +28,11 @@ app.get('/urls', (require, response)=>{
 
 app.get('/urls/new',(require, response)=>{
    response.render('urls_new')
+})
+
+app.post('/urls', (require, response)=>{
+   console.log(require.body)
+   response.send('OK')
 })
 
 app.get("/urls/:shortURL", (req, res) => {
