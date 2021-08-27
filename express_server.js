@@ -42,6 +42,12 @@ app.post('/urls', (require, response)=>{
    response.redirect(`/urls/${randomString}`)
 })
 
+app.post('/urls/:id', (require, response)=>{
+   const sID = require.params.id
+   urlDatabase[sID] = require.body.newURL
+   response.redirect(`/urls`)
+})
+
 app.post('/urls/:shortURL/delete', (require, response)=>{
    const shURL = require.params.shortURL
    delete urlDatabase[shURL]
