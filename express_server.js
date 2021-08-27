@@ -42,6 +42,12 @@ app.post('/urls', (require, response)=>{
    response.redirect(`/urls/${randomString}`)
 })
 
+app.post('/urls/:shortURL/delete', (require, response)=>{
+   const shURL = require.params.shortURL
+   delete urlDatabase[shURL]
+   response.redirect(`/urls`)
+})
+
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
