@@ -43,7 +43,8 @@ app.post('/logout', (require, response)=>{
 })
 
 app.get('/register', (require, response)=>{
-    const templateVars = {username: require.cookies["username"]}
+   //const templateVars = {username: require.cookies["username"]}
+   const templateVars = {user: users[require.cookies["user_id"]]}
    response.render('urls_register', templateVars);
 })
 
@@ -51,17 +52,18 @@ app.post('/register', (require, response)=>{
    const userID = generateRandomString(6)
    users[userID] = {id: userID, email: require.body.email, password: require.body.password}
    response.cookie('user_id', userID)
-   console.log(users)
    response.redirect(`/urls`)
 })
 
 app.get('/urls', (require, response)=>{
-   const templateVars = {urls: urlDatabase, username: require.cookies["username"]}
+   //const templateVars = {urls: urlDatabase, username: require.cookies["username"]}
+   const templateVars = {urls: urlDatabase, user: users[require.cookies["user_id"]]}
    response.render('urls_index', templateVars);
 })
 
 app.get('/urls/new',(require, response)=>{
-   const templateVars = {username: require.cookies["username"]}
+   //const templateVars = {username: require.cookies["username"]}
+   const templateVars = {user: users[require.cookies["user_id"]]}
    response.render('urls_new', templateVars)
 })
 
@@ -84,7 +86,8 @@ app.post('/urls/:shortURL/delete', (require, response)=>{
 })
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
+  //const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[require.cookies["user_id"]]};
   res.render("urls_show", templateVars);
 });
 
