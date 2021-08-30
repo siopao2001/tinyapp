@@ -17,7 +17,16 @@ function generateRandomString(len) {
       array[Math.floor(Math.random() * array.length)];
   }
   return ans;
-}
+};
+
+function emailSearch(userEmail) {
+  for (item in users) {
+    if (users[item].email === userEmail) {
+      return true
+    }
+  }
+  return false
+};
 
 app.set('view engine', 'ejs')
 
@@ -38,31 +47,38 @@ app.post('/login', (require, response)=>{
 })
 
 app.post('/logout', (require, response)=>{
-   response.clearCookie('username')
+   response.clearCookie('user_id')
    response.redirect(`/urls`)
 })
 
 app.get('/register', (require, response)=>{
-   //const templateVars = {username: require.cookies["username"]}
    const templateVars = {user: users[require.cookies["user_id"]]}
    response.render('urls_register', templateVars);
 })
 
-app.post('/register', (require, response)=>{
-   const userID = generateRandomString(6)
-   users[userID] = {id: userID, email: require.body.email, password: require.body.password}
-   response.cookie('user_id', userID)
-   response.redirect(`/urls`)
+app.post('/register', (require, response) => {
+  if (require.body.email === '' || require.body.password === '') {
+    response.status(400).send("Please fill out the email and password fields")
+  } else if (emailSearch(require.body.email) === true) {
+    response.status(400).send("Email already exists")
+  } else {
+    const userID = generateRandomString(6)
+    users[userID] = {
+      id: userID,
+      email: require.body.email,
+      password: require.body.password
+    }
+    response.cookie('user_id', userID)
+    response.redirect(`/urls`)
+  }
 })
 
 app.get('/urls', (require, response)=>{
-   //const templateVars = {urls: urlDatabase, username: require.cookies["username"]}
    const templateVars = {urls: urlDatabase, user: users[require.cookies["user_id"]]}
    response.render('urls_index', templateVars);
 })
 
 app.get('/urls/new',(require, response)=>{
-   //const templateVars = {username: require.cookies["username"]}
    const templateVars = {user: users[require.cookies["user_id"]]}
    response.render('urls_new', templateVars)
 })
@@ -86,7 +102,6 @@ app.post('/urls/:shortURL/delete', (require, response)=>{
 })
 
 app.get("/urls/:shortURL", (req, res) => {
-  //const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[require.cookies["user_id"]]};
   res.render("urls_show", templateVars);
 });
