@@ -11,7 +11,7 @@ app.use(cookieParser());
 
 function generateRandomString(len) {
   var ans = '';
-  const array = 'abcdefghijklmnopqrstuvwxyz123456789123456789';
+  const array = 'abcdefghijklmnopqrstuvwxyz123456789123456789123456789';
   for (var i = len; i > 0; i--) {
     ans +=
       array[Math.floor(Math.random() * array.length)];
@@ -22,7 +22,7 @@ function generateRandomString(len) {
 function emailSearch(userEmail) {
   for (item in users) {
     if (users[item].email === userEmail) {
-      return true
+      return users[item]
     }
   }
   return false
@@ -48,8 +48,15 @@ app.get('/login', (require, response)=>{
 
 
 app.post('/login', (require, response)=>{
-   response.cookie('username', require.body.username)
-   response.redirect(`/urls`)
+   const userInfo = emailSearch(require.body.email)
+   if(userInfo.email !== require.body.email) {
+        response.status(403).send("Email does not exist")
+  }else if(userInfo.password !== require.body.password){
+        response.status(403).send("Invalid password")
+  }else{
+        response.cookie('user_id', userInfo.id)
+        response.redirect(`/urls`)
+  }
 })
 
 app.post('/logout', (require, response)=>{
@@ -65,7 +72,7 @@ app.get('/register', (require, response)=>{
 app.post('/register', (require, response) => {
   if (require.body.email === '' || require.body.password === '') {
     response.status(400).send("Please fill out the email and password fields")
-  } else if (emailSearch(require.body.email) === true) {
+  } else if (emailSearch(require.body.email).email === require.body.email) {
     response.status(400).send("Email already exists")
   } else {
     const userID = generateRandomString(6)
@@ -108,7 +115,7 @@ app.post('/urls/:shortURL/delete', (require, response)=>{
 })
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[require.cookies["user_id"]]};
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies["user_id"]]};
   res.render("urls_show", templateVars);
 });
 
