@@ -26,6 +26,8 @@ const urlDatabase =  {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {}
+
 app.get('/', (require, response)=>{
    response.send('Hello!');
 });
@@ -43,6 +45,14 @@ app.post('/logout', (require, response)=>{
 app.get('/register', (require, response)=>{
     const templateVars = {username: require.cookies["username"]}
    response.render('urls_register', templateVars);
+})
+
+app.post('/register', (require, response)=>{
+   const userID = generateRandomString(6)
+   users[userID] = {id: userID, email: require.body.email, password: require.body.password}
+   response.cookie('user_id', userID)
+   console.log(users)
+   response.redirect(`/urls`)
 })
 
 app.get('/urls', (require, response)=>{
