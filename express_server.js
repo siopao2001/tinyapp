@@ -41,6 +41,12 @@ app.get('/', (require, response)=>{
    response.send('Hello!');
 });
 
+app.get('/login', (require, response)=>{
+  const templateVars = {user: users[require.cookies["user_id"]]}
+  response.render('urls_login', templateVars);
+})
+
+
 app.post('/login', (require, response)=>{
    response.cookie('username', require.body.username)
    response.redirect(`/urls`)
