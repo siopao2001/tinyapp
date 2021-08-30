@@ -40,6 +40,11 @@ app.post('/logout', (require, response)=>{
    response.redirect(`/urls`)
 })
 
+app.get('/register', (require, response)=>{
+    const templateVars = {username: require.cookies["username"]}
+   response.render('urls_register', templateVars);
+})
+
 app.get('/urls', (require, response)=>{
    const templateVars = {urls: urlDatabase, username: require.cookies["username"]}
    response.render('urls_index', templateVars);
