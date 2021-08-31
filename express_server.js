@@ -30,10 +30,7 @@ function emailSearch(userEmail) {
 
 app.set('view engine', 'ejs')
 
-const urlDatabase =  {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+const urlDatabase =  {};
 
 const users = {}
 
@@ -91,20 +88,26 @@ app.get('/urls', (require, response)=>{
    response.render('urls_index', templateVars);
 })
 
-app.get('/urls/new',(require, response)=>{
-   const templateVars = {user: users[require.cookies["user_id"]]}
-   response.render('urls_new', templateVars)
+app.get('/urls/new', (require, response) => {
+  if (!users[require.cookies["user_id"]]) {
+    response.redirect('/login')
+  } else {
+    const templateVars = {
+      user: users[require.cookies["user_id"]]
+    }
+    response.render('urls_new', templateVars)
+  }
 })
 
 app.post('/urls', (require, response)=>{
    const randomString = generateRandomString(6)
-   urlDatabase[randomString] = require.body.longURL
+   urlDatabase[randomString] = {longURL: require.body.longURL, userID: users[require.cookies["user_id"]].id}
    response.redirect(`/urls/${randomString}`)
 })
 
 app.post('/urls/:id', (require, response)=>{
    const sID = require.params.id
-   urlDatabase[sID] = require.body.newURL
+   urlDatabase[sID].longURL = require.body.newURL
    response.redirect(`/urls`)
 })
 
@@ -115,12 +118,12 @@ app.post('/urls/:shortURL/delete', (require, response)=>{
 })
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies["user_id"]]};
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.cookies["user_id"]]};
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL]
+  const longURL = urlDatabase[req.params.shortURL].longURL
   res.redirect(longURL);
 });
 
