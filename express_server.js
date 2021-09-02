@@ -9,6 +9,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
+const bcrypt = require('bcryptjs');
+
 function generateRandomString(len) {
   var ans = '';
   const array = 'abcdefghijklmnopqrstuvwxyz123456789123456789123456789';
@@ -61,7 +63,7 @@ app.post('/login', (require, response)=>{
    const userInfo = emailSearch(require.body.email)
    if(userInfo.email !== require.body.email) {
         response.status(403).send("Email does not exist")
-  }else if(userInfo.password !== require.body.password){
+  }else if(bcrypt.compareSync(require.body.password, userInfo.password) === false){
         response.status(403).send("Invalid password")
   }else{
         response.cookie('user_id', userInfo.id)
@@ -89,9 +91,10 @@ app.post('/register', (require, response) => {
     users[userID] = {
       id: userID,
       email: require.body.email,
-      password: require.body.password
+      password: bcrypt.hashSync(require.body.password, 10)
     }
     response.cookie('user_id', userID)
+    console.log(users)
     response.redirect(`/urls`)
   }
 })
