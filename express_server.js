@@ -13,43 +13,45 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000,
 }));
 
+const { generateRandomString, urlsForUser, emailSearch } = require("./helpers");
+
 
 // var cookieParser = require('cookie-parser');
 // app.use(cookieParser());
 
 const bcrypt = require('bcryptjs');
 
-function generateRandomString(len) {
-  var ans = '';
-  const array = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrtsuvwxyz123456789123456789123456789123456789';
-  for (var i = len; i > 0; i--) {
-    ans +=
-      array[Math.floor(Math.random() * array.length)];
-  }
-  return ans;
-};
+// function generateRandomString(len) {
+//   var ans = '';
+//   const array = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrtsuvwxyz123456789123456789123456789123456789';
+//   for (var i = len; i > 0; i--) {
+//     ans +=
+//       array[Math.floor(Math.random() * array.length)];
+//   }
+//   return ans;
+// };
 
-function emailSearch(userEmail) {
-  for (item in users) {
-    if (users[item].email === userEmail) {
-      return users[item]
-    }
-  }
-  return false
-};
+// function emailSearch(userEmail, database) {
+//   for (item in database) {
+//     if (database[item].email === userEmail) {
+//       return database[item]
+//     }
+//   }
+//   return false
+// };
 
-function urlsForUser(id) {
-  let newObject = {}
-  for (url in urlDatabase) {
-    if (urlDatabase[url].userID === id) {
-      newObject[url] = {
-        longURL: urlDatabase[url].longURL,
-        userID: urlDatabase[url].userID
-      }
-    }
-  }
-  return newObject
-};
+// function urlsForUser(id, data) {
+//   let newObject = {}
+//   for (url in data) {
+//     if (data[url].userID === id) {
+//       newObject[url] = {
+//         longURL: data[url].longURL,
+//         userID: data[url].userID
+//       }
+//     }
+//   }
+//   return newObject
+// };
 
 app.set('view engine', 'ejs')
 
@@ -74,7 +76,7 @@ app.get('/login', (require, response) => {
 
 
 app.post('/login', (require, response)=>{
-   const userInfo = emailSearch(require.body.email)
+   const userInfo = emailSearch(require.body.email, users)
    if(userInfo.email !== require.body.email) {
         response.status(403).send("Email does not exist")
   }else if(bcrypt.compareSync(require.body.password, userInfo.password) === false){
@@ -105,7 +107,7 @@ app.get('/register', (require, response) => {
 app.post('/register', (require, response) => {
   if (require.body.email === '' || require.body.password === '') {
     response.status(400).send("Please fill out the email and password fields")
-  } else if (emailSearch(require.body.email).email === require.body.email) {
+  } else if (emailSearch(require.body.email, users).email === require.body.email) {
     response.status(400).send("Email already exists")
   } else {
     const userID = generateRandomString(6)
@@ -125,7 +127,7 @@ app.get('/urls', (require, response) => {
     response.send("Please log in or register")
   } else {
     const templateVars = {
-      urls: urlsForUser(/*require.cookies["user_id"]*/require.session.user_id),
+      urls: urlsForUser(/*require.cookies["user_id"]*/require.session.user_id, urlDatabase),
       user: users[/*require.cookies["user_id"]*/require.session.user_id]
     }
     response.render('urls_index', templateVars);
