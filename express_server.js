@@ -31,7 +31,7 @@ const urlDatabase = {};
 const users = {};
 
 app.get('/', (require, response) => {
-  response.redirect('/login');
+  response.redirect('/urls');
 });
 
 app.get('/login', (require, response) => {
