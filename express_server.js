@@ -127,9 +127,13 @@ app.post('/urls', (require, response) => {
 });
 
 app.post('/urls/:id', (require, response) => {
-  const sID = require.params.id;
-  urlDatabase[sID].longURL = require.body.newURL;
-  response.redirect(`/urls`);
+  if (!users[require.session.user_id] || urlDatabase[require.params.shortURL].userID !== users[require.session.user_id].id) {
+    response.status(401).send("Please login as the appropriate user");
+  } else {
+    const sID = require.params.id;
+    urlDatabase[sID].longURL = require.body.newURL;
+    response.redirect(`/urls`);
+  }
 });
 
 app.post('/urls/:shortURL/delete', (require, response) => {
