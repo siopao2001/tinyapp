@@ -36,7 +36,7 @@ app.get('/', (require, response) => {
 
 app.get('/login', (require, response) => {
   if (users[require.session.user_id]) {
-    response.send('Please sign out to log in as a different user ');
+    response.redirect('/urls');
   } else {
     const templateVars = {
       user: users[require.session.user_id]
