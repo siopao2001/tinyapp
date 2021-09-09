@@ -114,12 +114,16 @@ app.get('/urls/new', (require, response) => {
 });
 
 app.post('/urls', (require, response) => {
-  const randomString = generateRandomString(6);
+  if (!users[require.session.user_id]) {
+    response.send("Please log in or register");
+  } else {
+     const randomString = generateRandomString(6);
   urlDatabase[randomString] = {
     longURL: require.body.longURL,
     userID: users[require.session.user_id].id
   };
   response.redirect(`/urls/${randomString}`);
+ }
 });
 
 app.post('/urls/:id', (require, response) => {
