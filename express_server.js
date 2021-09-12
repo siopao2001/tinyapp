@@ -120,7 +120,7 @@ app.post('/urls', (require, response) => {
      const randomString = generateRandomString(6);
   urlDatabase[randomString] = {
     longURL: require.body.longURL,
-    userID: users[require.session.user_id].id
+    userID: users[require.session.user_id].id 
   };
   response.redirect(`/urls/${randomString}`);
  }
