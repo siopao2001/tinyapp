@@ -127,7 +127,7 @@ app.post('/urls', (require, response) => {
 });
 
 app.post('/urls/:id', (require, response) => {
-  if (!users[require.session.user_id] || urlDatabase[require.params.shortURL].userID !== users[require.session.user_id].id) {
+  if (!users[require.session.user_id] || urlDatabase[require.params.id].userID !== users[require.session.user_id].id) {
     response.status(401).send("Please login as the appropriate user");
   } else {
     const sID = require.params.id;
